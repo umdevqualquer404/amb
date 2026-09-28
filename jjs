@@ -1,0 +1,309 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local VIM = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+local Player = Players.LocalPlayer
+
+pcall(function()
+    if CoreGui:FindFirstChild("PrincesinhoAutoJJS") then
+        CoreGui.PrincesinhoAutoJJS:Destroy()
+    end
+end)
+
+---------------------------------------------------
+-- GUI
+---------------------------------------------------
+local gui = Instance.new("ScreenGui")
+gui.Name = "PrincesinhoAutoJJS"
+gui.Parent = CoreGui
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0,260,0,185)
+main.Position = UDim2.new(0.5,-130,0.5,-92)
+main.BackgroundColor3 = Color3.fromRGB(10,10,10)
+main.BorderSizePixel = 0
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,18)
+
+local stroke = Instance.new("UIStroke")
+stroke.Parent = main
+stroke.Color = Color3.fromRGB(35,35,35)
+stroke.Thickness = 1.3
+
+local glow = Instance.new("ImageLabel")
+glow.Parent = main
+glow.BackgroundTransparency = 1
+glow.Size = UDim2.new(1,40,1,40)
+glow.Position = UDim2.new(0,-20,0,-20)
+glow.Image = "rbxassetid://5028857084"
+glow.ImageTransparency = 0.45
+glow.ScaleType = Enum.ScaleType.Slice
+glow.SliceCenter = Rect.new(24,24,276,276)
+
+local title = Instance.new("TextLabel")
+title.Name = "KeepVisible"
+title.Parent = main
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0,15,0,10)
+title.Size = UDim2.new(1,-30,0,25)
+title.Font = Enum.Font.GothamBold
+title.Text = "Auto JJs"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextSize = 24
+title.TextColor3 = Color3.fromRGB(0,170,255)
+
+local minimize = Instance.new("TextButton")
+minimize.Name = "KeepVisible"
+minimize.Parent = main
+minimize.Size = UDim2.new(0,28,0,28)
+minimize.Position = UDim2.new(1,-35,0,8)
+minimize.BackgroundColor3 = Color3.fromRGB(25,25,25)
+minimize.BorderSizePixel = 0
+minimize.Text = "-"
+minimize.Font = Enum.Font.GothamBold
+minimize.TextSize = 22
+minimize.TextColor3 = Color3.fromRGB(255,255,255)
+
+Instance.new("UICorner", minimize).CornerRadius = UDim.new(0,8)
+
+-- CAIXA 1: VELOCIDADE (DELAY)
+local delayBox = Instance.new("TextBox")
+delayBox.Parent = main
+delayBox.Size = UDim2.new(0,105,0,38)
+delayBox.Position = UDim2.new(0,15,0,55)
+delayBox.BackgroundColor3 = Color3.fromRGB(24,24,24)
+delayBox.BorderSizePixel = 0
+delayBox.Font = Enum.Font.GothamBold
+delayBox.PlaceholderText = "Rec: 0.53s"
+delayBox.Text = "0.53"
+delayBox.TextColor3 = Color3.fromRGB(255,255,255)
+delayBox.TextSize = 16
+
+Instance.new("UICorner", delayBox).CornerRadius = UDim.new(0,10)
+
+-- PLACA FIXA: RECOMENDADO
+local recPlate = Instance.new("TextLabel")
+recPlate.Parent = main
+recPlate.Size = UDim2.new(0,120,0,38)
+recPlate.Position = UDim2.new(0,125,0,55)
+recPlate.BackgroundColor3 = Color3.fromRGB(20,25,20)
+recPlate.BorderSizePixel = 0
+recPlate.Font = Enum.Font.GothamBold
+recPlate.Text = "Recomendado"
+recPlate.TextColor3 = Color3.fromRGB(0,210,100)
+recPlate.TextSize = 14
+
+Instance.new("UICorner", recPlate).CornerRadius = UDim.new(0,10)
+
+local recStroke = Instance.new("UIStroke")
+recStroke.Parent = recPlate
+recStroke.Color = Color3.fromRGB(30,55,35)
+recStroke.Thickness = 1
+
+local toggle = Instance.new("TextButton")
+toggle.Parent = main
+toggle.Size = UDim2.new(0,230,0,48)
+toggle.Position = UDim2.new(0.5,-115,0,110)
+toggle.BackgroundColor3 = Color3.fromRGB(25,25,25)
+toggle.BorderSizePixel = 0
+toggle.Font = Enum.Font.GothamBold
+toggle.Text = "OFF"
+toggle.TextColor3 = Color3.fromRGB(255,70,70)
+toggle.TextSize = 25
+
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0,12)
+
+local credit = Instance.new("TextLabel")
+credit.Parent = main
+credit.BackgroundTransparency = 1
+credit.Position = UDim2.new(0,0,1,-22)
+credit.Size = UDim2.new(1,0,0,18)
+credit.Font = Enum.Font.Gotham
+credit.Text = "By princesinho/ YT princesinho0004"
+credit.TextColor3 = Color3.fromRGB(110,110,110)
+credit.TextSize = 11
+
+---------------------------------------------------
+-- MINIMIZE & DRAG SYSTEMS
+---------------------------------------------------
+local minimized = false
+local originalSize = main.Size
+
+minimize.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        for _,v in pairs(main:GetChildren()) do
+            if v:IsA("GuiObject") and v.Name ~= "KeepVisible" then v.Visible = false end
+        end
+        TweenService:Create(main, TweenInfo.new(0.2), {Size = UDim2.new(0,260,0,40)}):Play()
+        minimize.Text = "+"
+    else
+        TweenService:Create(main, TweenInfo.new(0.2), {Size = originalSize}):Play()
+        for _,v in pairs(main:GetChildren()) do
+            if v:IsA("GuiObject") then v.Visible = true end
+        end
+        minimize.Visible = true
+        title.Visible = true
+        minimize.Text = "-"
+    end
+end)
+
+local dragging, dragInput, dragStart, startPos
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+main.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
+end)
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+---------------------------------------------------
+-- CONFIGS INTERNAS
+---------------------------------------------------
+local enabled = false
+local clickDelay = 0.53
+
+local keyMap = {
+    Q = Enum.KeyCode.Q,
+    E = Enum.KeyCode.E
+}
+
+-- Gerencia a caixa de Delay Livre
+local function updateDelay()
+    local texto = delayBox.Text:gsub("%s+", "")
+    if texto == "" then
+        clickDelay = 0.53
+    else
+        local num = tonumber(texto)
+        if num and num >= 0 then
+            clickDelay = num
+        end
+    end
+end
+delayBox.FocusLost:Connect(updateDelay)
+
+local function desativarCheat()
+    enabled = false
+    toggle.Text = "OFF"
+    toggle.TextColor3 = Color3.fromRGB(255,70,70)
+    TweenService:Create(toggle, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(25,25,25)}):Play()
+end
+
+toggle.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    if enabled then
+        updateDelay()
+        toggle.Text = "ON"
+        toggle.TextColor3 = Color3.fromRGB(0,255,120)
+        TweenService:Create(toggle, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30,40,30)}):Play()
+    else
+        desativarCheat()
+    end
+end)
+
+---------------------------------------------------
+-- GATILHOS DE ENTRADA HÍBRIDOS (PC & MOBILE)
+---------------------------------------------------
+local function dispararTecla(keycode)
+    pcall(function()
+        VIM:SendKeyEvent(true, keycode, false, game)
+        task.wait(0.01)
+        VIM:SendKeyEvent(false, keycode, false, game)
+    end)
+end
+
+local function cliqueVirtualFisico(button)
+    if not button then return end
+    pcall(function()
+        -- 1. Dispara via sinais internos do Roblox (Garante funcionamento em alguns scripts)
+        firesignal(button.MouseButton1Down)
+        firesignal(button.MouseButton1Click)
+        firesignal(button.TouchTap)
+        button:Activate()
+        
+        -- 2. Dispara simulando clique físico na posição exata da tela (Essencial para Mobile)
+        local x = button.AbsolutePosition.X + (button.AbsoluteSize.X / 2)
+        local y = button.AbsolutePosition.Y + (button.AbsoluteSize.Y / 2)
+        
+        VIM:SendMouseButtonEvent(x, y, 0, true, game, 1)  -- Aperta
+        task.wait(0.01)
+        VIM:SendMouseButtonEvent(x, y, 0, false, game, 1) -- Solta
+    end)
+end
+
+---------------------------------------------------
+-- MOTOR ORIGINAL COMPACTADO HÍBRIDO
+---------------------------------------------------
+task.spawn(function()
+    local processados = {}
+
+    while true do
+        if clickDelay > 0 then
+            task.wait(0.01)
+        else
+            task.wait()
+        end
+
+        if enabled then
+            pcall(function()
+                local pGui = Player:FindFirstChild("PlayerGui")
+                local poli = pGui and pGui:FindFirstChild("Polichinelos")
+                local screen = poli and poli:FindFirstChild("Screen")
+
+                if screen and enabled then
+                    for _, botao in ipairs(screen:GetChildren()) do
+                        if botao:IsA("ImageButton") and botao.Visible and not processados[botao] then
+                            if not botao:GetAttribute("Completed") then
+                                local label = botao:FindFirstChildWhichIsA("TextLabel")
+                                
+                                if label and label.Text and label.Text ~= "" then
+                                    local textoLetra = tostring(label.Text):upper():gsub("%s+", "")
+                                    processados[botao] = true
+                                    
+                                    -- Roteamento Inteligente: Se for PC e a letra for mapeada (Q ou E), usa teclado.
+                                    -- Se for Mobile ou outra tecla, força o Toque Físico/Virtual na tela.
+                                    if not UIS.TouchEnabled and keyMap[textoLetra] then
+                                        dispararTecla(keyMap[textoLetra])
+                                    else
+                                        cliqueVirtualFisico(botao)
+                                    end
+                                    
+                                    local remote = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("Polichinelos")
+                                    if remote then
+                                        remote:FireServer("Add", 1)
+                                    end
+
+                                    if clickDelay > 0 then
+                                        task.wait(clickDelay)
+                                    end
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+
+            if #processados > 15 then
+                table.clear(processados)
+            end
+        end
+    end
+end)
